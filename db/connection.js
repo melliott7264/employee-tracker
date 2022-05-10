@@ -14,4 +14,3 @@ const pool = mysql.createConnection(
 const promisePool = pool.promise();
 
 module.exports = promisePool;
-// module.exports = pool;
