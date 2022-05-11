@@ -10,7 +10,13 @@ const {
         queryAllManagers,
         returnManagerId
        } = require('./lib/employee');
-const {queryAllDepartmentData, addDepartment, deleteDepartment} = require('./lib/department');
+const {
+        queryAllDepartmentData,
+        addDepartment,
+        deleteDepartment,
+        queryAllDepartments,
+        returnDepartmentId
+       } = require('./lib/department');
 const {queryAllRoleData, addRole, deleteRole} = require('./lib/role');
 const inquirer = require('inquirer');
 
@@ -60,16 +66,28 @@ function displayViewMenu() {
     .then(({view_menu}) => {
         switch (view_menu) {
             case "All Departments":
-                queryAllDepartmentData();
-                displayInitialMenu();
+                queryAllDepartmentData()
+                .then((istrue) => {
+                    if (istrue) {
+                        displayInitialMenu();
+                    }
+                });
                 break;
             case "All Roles":
-                queryAllRoleData();
-                displayInitialMenu();
+                queryAllRoleData()
+                .then((istrue) => {
+                    if (istrue) {
+                        displayInitialMenu();
+                    }
+                });
                 break;
             case "All Employees":
-                queryAllEmployeeData();
-                displayInitialMenu();
+                queryAllEmployeeData()
+                .then((istrue)=> {
+                    if(istrue) {
+                     displayInitialMenu();   
+                    }
+                });
                 break;
             case "Employees by Manager":
                 displayEmployeesByManager();
@@ -95,30 +113,72 @@ async function displayEmployeesByManager() {
         choices: managersArray
     })
     .then(({manager}) => {
-        const manager_id = returnManagerId(manager);
-        console.log(manager_id);
-        queryEmployeeByManager(manager_id);
+        returnManagerId(manager)
+        .then((manager_id) => {
+            queryEmployeeByManager(manager_id)
+            .then((istrue)=>{
+                if (istrue) {
+                   displayInitialMenu(); 
+                }
+                
+            });
+        });
+    });
+  
+};
+
+async function displayEmployeesByDepartment() {
+    const departmentArray = await queryAllDepartments();
+
+    inquirer
+    .prompt({
+        type: "list",
+        name: "department",
+        message: "Please select the Department",
+        choices: departmentArray
     })
+    .then(({department}) => {
+        returnDepartmentId(department)
+        .then((department_id) => {
+            queryEmployeeByDepartment(department_id)
+            .then((istrue)=>{
+                if (istrue) {
+                   displayInitialMenu(); 
+                }
+                
+            });
+        });
+    });
 
-    // displayInitialMenu();
 };
 
-function displayEmployeesByDepartment() {
+async function displaySalariesByDepartment() {
+    const departmentArray = await queryAllDepartments();
 
+    inquirer
+    .prompt({
+        type: "list",
+        name: "department",
+        message: "Please select the Department",
+        choices: departmentArray
+    })
+    .then(({department}) => {
+        returnDepartmentId(department)
+        .then((department_id) => {
+            queryEmployeeSalaryByDepartment(department_id)
+            .then((istrue)=>{
+                if (istrue) {
+                   displayInitialMenu(); 
+                }
+                
+            });
+        });
+    });
 
 };
 
-function displaySalariesByDepartment() {
 
 
-};
-
-
-
-// queryEmployeeSalaryByDepartment(department_id);
-
-// queryEmployeeByManager(3);
-// queryEmployeeByDepartment(department.id);
 
 // addAnEmployee(first_name, last_name, role_id, manager_id);
 // updateEmployeeRole(id,role);
