@@ -17,7 +17,13 @@ const {
         queryAllDepartments,
         returnDepartmentId
        } = require('./lib/department');
-const {queryAllRoleData, addRole, deleteRole} = require('./lib/role');
+const {
+        queryAllRoleData,
+        addRole,
+        deleteRole,
+        queryAllRoles,
+        returnRoleId
+     } = require('./lib/role');
 const inquirer = require('inquirer');
 
 function startup() {
@@ -102,7 +108,11 @@ function displayViewMenu() {
     });
 };
 
-function displayAddMenu() {
+async function displayAddMenu() {
+const departmentArray = await queryAllDepartments();
+const roleArray = await queryAllRoles();
+const managersArray = await queryAllManagers();
+
     inquirer
     .prompt(
         {
@@ -125,7 +135,7 @@ function displayAddMenu() {
                             if (nameInput) {
                                 return true;
                             } else {
-                                console.log('Please enter a name for your Manager!');
+                                console.log('Please enter a name for your Department!');
                                 return false;
                             }
                         }
@@ -170,27 +180,22 @@ function displayAddMenu() {
                         }
                     },
                     {
-                        type: "number",
-                        name:   "department_id",
-                        message: "Please enter department id:",
-                        validation: idInput => {
-                            if (Number.isInteger(idInput)) {
-                                return true;
-                            } else {
-                                console.log('Please enter an integer for the department id!');
-                                return false;
-                            }
-                        }
+                        type: "list",
+                        name:   "department_name",
+                        message: "Please choose a department:",
+                        choices: departmentArray
                     }
                 ])
                 .then((inputDataArray) => {
-                    console.log(inputDataArray.title, inputDataArray.salary, inputDataArray.department_id);
-                    addRole(inputDataArray.title, inputDataArray.salary, inputDataArray.department_id)
-                        .then((istrue) => {
-                            if (istrue) {
-                                displayInitialMenu();
-                            }
-                        });
+                    returnDepartmentId(inputDataArray.department_name)
+                    .then((department_id) => {
+                        addRole(inputDataArray.title, inputDataArray.salary, department_id)
+                            .then((istrue) => {
+                                if (istrue) {
+                                    displayInitialMenu();
+                                }
+                            });
+                    });
                 });
                 break;
             case "Employee":
@@ -223,45 +228,141 @@ function displayAddMenu() {
                         }
                     },
                     {
-                        type: "number",
-                        name:   "role_id",
-                        message: "Please enter the role id:",
-                        validation: role_idInput => {
-                            if (Number.isInteger(role_idInput)) {
-                                return true;
-                            } else {
-                                console.log('Please enter an integer for the role id!');
-                                return false;
-                            }
-                        }
+                        type: "list",
+                        name:   "role",
+                        message: "Please select the role for this employee:",
+                        choices:  roleArray
                     },
                     {
-                        type: "number",
-                        name:   "manager_id",
-                        message: "Please enter the manager id:",
-                        validation: manager_idInput => {
-                            if (Number.isInteger(manager_idInput)) {
-                                return true;
-                            } else {
-                                console.log('Please enter an integer for the manager id!');
-                                return false;
-                            }
-                        }
+                        type: "list",
+                        name:   "manager",
+                        message: "Please select the manager for this employee:",
+                        choices: managersArray
                     }
                 ])
             .then((inputDataArray) => {
-                    addAnEmployee(inputDataArray.first_name, inputDataArray.last_name, inputDataArray.role_id, inputDataArray.manager_id)
-                        .then((istrue)=> {
-                            if(istrue) {
-                            displayInitialMenu();   
-                            }
-                        });
+                returnRoleId(inputDataArray.role)
+                    .then((role_id) => {
+                        returnManagerId(inputDataArray.manager)
+                            .then((manager_id) => {
+                                  addAnEmployee(inputDataArray.first_name, inputDataArray.last_name, role_id, manager_id)
+                                    .then((istrue)=> {
+                                        if(istrue) {
+                                        displayInitialMenu();   
+                                        }
+                                    });
+                            });
+                    });                  
             });
                 break;  
         }
     });
 
 };
+
+async function displayUpdateMenu() {
+    const roleArray = await queryAllRoles();
+    const employeeArray = await queryAllEmployees();
+    const managersArray = await queryAllManagers();
+
+    inquirer
+    .prompt(
+        {
+            type: "list",
+            name: "add_menu",
+            message: "Please select desired Update operation:",
+            choices: ["Employee Role", "Employee Manager"]
+        }
+    )
+    .then(({update_menu}) => {
+        switch (update_menu) {
+            case "Employee Role":
+                inquirer
+                .prompt ([
+                    {
+                        // need to list employees and then get the employee id
+                        type: "number",
+                        name:   "id",
+                        message: "Please enter the Employee id:",
+                        validation: idInput => {
+                            if (Number.isInteger(idInput)) {
+                                return true;
+                            } else {
+                                console.log('Please enter an integer for the Employee id!');
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        // need to list roles to select and then return the role id
+                        type: "number",
+                        name:   "role",
+                        message: "Please enter the Employee role id:",
+                        validation: roleInput => {
+                            if (Number.isInteger(roleInput)) {
+                                return true;
+                            } else {
+                                console.log('Please enter an integer for role id!');
+                                return false;
+                            }
+                        }
+                    }
+
+                ])
+                .then((inputDataArray) => {
+                    updateEmployeeRole(inputDataArray.id, inputDataArray.role)           
+                    .then((istrue) => {
+                        if (istrue) {
+                        displayInitialMenu();
+                        }
+                     });
+                 });
+                break;
+            case "Employee Manager":
+                inquirer
+                .prompt ([
+                    {
+                        // need to list employees to select one and then return id
+                        type: "number",
+                        name:   "id",
+                        message: "Please enter the Employee id:",
+                        validation: salaryInput => {
+                            if (Number.isInteger(salaryInput)) {
+                                return true;
+                            } else {
+                                console.log('Please enter an integer for the Employee id!');
+                                return false;
+                            }
+                        }
+                    },
+                    {
+                        // need to list managers to select one and then return id
+                        type: "number",
+                        name:   "manager",
+                        message: "Please enter the Manager id:",
+                        validation: idInput => {
+                            if (Number.isInteger(idInput)) {
+                                return true;
+                            } else {
+                                console.log('Please enter an integer for the Manager id!');
+                                return false;
+                            }
+                        }
+                    }
+                ])
+                .then((inputDataArray) => {
+                    updateEmployeeManager(inputDataArry.id, inputDataArray.manager_id)
+                        .then((istrue) => {
+                            if (istrue) {
+                                displayInitialMenu();
+                            }
+                        });
+                });
+                break; 
+        }
+    });
+};
+
 
 async function displayEmployeesByManager() {
     const managersArray = await queryAllManagers();
@@ -342,13 +443,11 @@ async function displaySalariesByDepartment() {
 
 
 
-// updateEmployeeRole(id,role);
-// updateEmployeeManager(id, manager_id);
+
+
 // deleteAnEmployee(id);
 
-
 // deleteDepartment(id);
-
 
 // deleteRole(id);
 
