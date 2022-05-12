@@ -2,7 +2,9 @@
 
 ## Description
 
-This is a command line application written in Node.js that will access its data on a SQL database using MySQL that tracks employees by employee, role, and department.   
+This is a command line application written in Node.js that will access its data on a SQL database using MySQL that tracks employees by employee, role, and department.  
+The user can view all employees, departments and roles as well as employees by manager or department and finally, display the total of all salaries for a department. 
+The user can add or delete an employee, role, or department.  They can also update an employee's role or manager.
 
 
 ## Table of Contents

@@ -1,3 +1,5 @@
+// These are all the SQL queries for the application as async functions
+// These are all the employee table related queries
 const {
         queryAllEmployeeData,
         addAnEmployee,
@@ -8,8 +10,11 @@ const {
         queryEmployeeByDepartment,
         queryEmployeeSalaryByDepartment,
         queryAllManagers,
-        returnManagerId
+        returnManagerId,
+        queryAllEmployees,
+        returnEmployeeId
        } = require('./lib/employee');
+// These are all the department table related queries       
 const {
         queryAllDepartmentData,
         addDepartment,
@@ -17,6 +22,7 @@ const {
         queryAllDepartments,
         returnDepartmentId
        } = require('./lib/department');
+// These are all the role table related queries       
 const {
         queryAllRoleData,
         addRole,
@@ -24,6 +30,7 @@ const {
         queryAllRoles,
         returnRoleId
      } = require('./lib/role');
+// End SQL queries     
 const inquirer = require('inquirer');
 
 function startup() {
@@ -37,22 +44,22 @@ function displayInitialMenu() {
         {
             type: "list",
             name: "main_menu",
-            message: "Please select desired operation for Employee/Role/Department:",
-            choices: ["View", "Add", "Update", "Delete"]
+            message: "Please select desired operation:",
+            choices: ["View Employee/Role/Department", "Add Employee/Role/Department", "Update Employee/Role/Department", "Delete Employee/Role/Department"]
         }
     )
     .then(({main_menu}) => {
         switch (main_menu) {
-            case "View":
+            case "View Employee/Role/Department":
                 displayViewMenu();
                 break;
-            case "Add":
+            case "Add Employee/Role/Department":
                 displayAddMenu();
                 break;
-            case "Update":
+            case "Update Employee/Role/Department":
                 displayUpdateMenu();
                 break;
-            case "Delete":
+            case "Delete Employee/Role/Department":
                 displayDeleteMenu();
                 break;
         }
@@ -109,9 +116,10 @@ function displayViewMenu() {
 };
 
 async function displayAddMenu() {
-const departmentArray = await queryAllDepartments();
-const roleArray = await queryAllRoles();
-const managersArray = await queryAllManagers();
+    // get the arrays for the menu lists right at the beginning with await operators as these need to be at the top of async functions
+    const departmentArray = await queryAllDepartments();
+    const roleArray = await queryAllRoles();
+    const managersArray = await queryAllManagers();
 
     inquirer
     .prompt(
@@ -240,20 +248,20 @@ const managersArray = await queryAllManagers();
                         choices: managersArray
                     }
                 ])
-            .then((inputDataArray) => {
-                returnRoleId(inputDataArray.role)
-                    .then((role_id) => {
-                        returnManagerId(inputDataArray.manager)
-                            .then((manager_id) => {
-                                  addAnEmployee(inputDataArray.first_name, inputDataArray.last_name, role_id, manager_id)
-                                    .then((istrue)=> {
-                                        if(istrue) {
-                                        displayInitialMenu();   
-                                        }
-                                    });
-                            });
-                    });                  
-            });
+                .then((inputDataArray) => {
+                    returnRoleId(inputDataArray.role)
+                        .then((role_id) => {
+                            returnManagerId(inputDataArray.manager)
+                                .then((manager_id) => {
+                                    addAnEmployee(inputDataArray.first_name, inputDataArray.last_name, role_id, manager_id)
+                                        .then((istrue)=> {
+                                            if(istrue) {
+                                            displayInitialMenu();   
+                                            }
+                                        });
+                                });
+                        });                  
+                });
                 break;  
         }
     });
@@ -261,6 +269,7 @@ const managersArray = await queryAllManagers();
 };
 
 async function displayUpdateMenu() {
+    // get the arrays for the menu lists right at the beginning with await operators as these need to be at the top of async functions
     const roleArray = await queryAllRoles();
     const employeeArray = await queryAllEmployees();
     const managersArray = await queryAllManagers();
@@ -269,101 +278,155 @@ async function displayUpdateMenu() {
     .prompt(
         {
             type: "list",
-            name: "add_menu",
-            message: "Please select desired Update operation:",
-            choices: ["Employee Role", "Employee Manager"]
+            name: "employee_name",
+            message: "Please select the Employee you wish to update:",
+            choices: employeeArray
         }
     )
-    .then(({update_menu}) => {
-        switch (update_menu) {
-            case "Employee Role":
+    .then(({employee_name}) => {
+        returnEmployeeId(employee_name)
+            .then((employee_id) => {
                 inquirer
-                .prompt ([
-                    {
-                        // need to list employees and then get the employee id
-                        type: "number",
-                        name:   "id",
-                        message: "Please enter the Employee id:",
-                        validation: idInput => {
-                            if (Number.isInteger(idInput)) {
-                                return true;
-                            } else {
-                                console.log('Please enter an integer for the Employee id!');
-                                return false;
-                            }
+                .prompt ({
+                        type: "list",
+                        name: "update_type",
+                        message: `Please select the update type for ${employee_name}`,
+                        choices: ["Role", "Manager"]
+                })
+                .then(({update_type}) => {
+                        switch (update_type) {
+                            case "Role":
+                                inquirer
+                                .prompt ({
+                                        type: "list",
+                                        name: "role",
+                                        message: `Please select the new role for ${employee_name}:`,
+                                        choices: roleArray
+                                        })
+                                .then(({role}) => {
+                                    returnRoleId(role)
+                                    .then((role_id) => {
+                                        updateEmployeeRole(employee_id, role_id)           
+                                        .then((istrue) => {
+                                            if (istrue) {
+                                            displayInitialMenu();
+                                            }
+                                        });
+                                    });
+                                });
+                                break;
+                            case "Manager":
+                                inquirer
+                                .prompt ({
+                                        type: "list",
+                                        name: "manager",
+                                        message: `Please select the new manager for ${employee_name}:`,
+                                        choices: managersArray
+                                        })
+                                .then(({manager}) => {
+                                    returnManagerId(manager)
+                                    .then((manager_id) => {
+                                        updateEmployeeManager(employee_id, manager_id)
+                                        .then((istrue) => {
+                                            if (istrue) {
+                                                displayInitialMenu();
+                                            }
+                                        });
+                                    });
+                                });
+                                break;
                         }
-                    },
-                    {
-                        // need to list roles to select and then return the role id
-                        type: "number",
-                        name:   "role",
-                        message: "Please enter the Employee role id:",
-                        validation: roleInput => {
-                            if (Number.isInteger(roleInput)) {
-                                return true;
-                            } else {
-                                console.log('Please enter an integer for role id!');
-                                return false;
-                            }
-                        }
-                    }
+                });
+            });
+    });
+};
 
-                ])
-                .then((inputDataArray) => {
-                    updateEmployeeRole(inputDataArray.id, inputDataArray.role)           
-                    .then((istrue) => {
-                        if (istrue) {
-                        displayInitialMenu();
-                        }
-                     });
-                 });
-                break;
-            case "Employee Manager":
+// Delete Menu
+async function displayDeleteMenu() {
+    // get the arrays for the menu lists right at the beginning with await operators as these need to be at the top of async functions
+    const roleArray = await queryAllRoles();
+    const employeeArray = await queryAllEmployees();
+    const departmentArray = await queryAllDepartments();
+
+    // Display menu of Employee/Department/Role for deletion
+    inquirer
+    .prompt({
+            type: "list",
+            name: "deletion_type",
+            message: "Select what you want to delete:",
+            choices: ["Employee", "Department", "Role"]
+    })
+    .then(({deletion_type}) => {
+        switch (deletion_type) {
+            case "Employee":
                 inquirer
-                .prompt ([
-                    {
-                        // need to list employees to select one and then return id
-                        type: "number",
-                        name:   "id",
-                        message: "Please enter the Employee id:",
-                        validation: salaryInput => {
-                            if (Number.isInteger(salaryInput)) {
-                                return true;
-                            } else {
-                                console.log('Please enter an integer for the Employee id!');
-                                return false;
-                            }
-                        }
-                    },
-                    {
-                        // need to list managers to select one and then return id
-                        type: "number",
-                        name:   "manager",
-                        message: "Please enter the Manager id:",
-                        validation: idInput => {
-                            if (Number.isInteger(idInput)) {
-                                return true;
-                            } else {
-                                console.log('Please enter an integer for the Manager id!');
-                                return false;
-                            }
-                        }
-                    }
-                ])
-                .then((inputDataArray) => {
-                    updateEmployeeManager(inputDataArry.id, inputDataArray.manager_id)
+                .prompt({
+                        type: "list",
+                        name: "employee_name",
+                        message: "Select the Employee to delete:",
+                        choices: employeeArray
+                })
+                .then(({employee_name}) => {
+                    returnEmployeeId(employee_name)
+                    .then((employee_id) => {
+                        // deleteAnEmployee(id)
+                        deleteAnEmployee(employee_id)
                         .then((istrue) => {
-                            if (istrue) {
+                            if (istrue){
                                 displayInitialMenu();
                             }
                         });
+                    });
                 });
-                break; 
+                break;
+            case "Department":
+                inquirer
+                .prompt({
+                        type: "list",
+                        name: "department_name",
+                        message: "Select the Department to delete:",
+                        choices: departmentArray
+                })
+                .then(({department_name}) => {
+                    returnDepartmentId(department_name)
+                    .then((department_id) => {
+                        // deleteDepartment(id);
+                        deleteDepartment(department_id)
+                        .then((istrue) => {
+                            if (istrue){
+                                displayInitialMenu();
+                            }
+                        });
+                    });
+                });
+
+                break;
+            case "Role":
+                inquirer
+                .prompt({
+                        type: "list",
+                        name: "role_name",
+                        message: "Select the Role to delete:",
+                        choices: roleArray
+                })
+                .then(({role_name}) => {
+                    returnRoleId(role_name)
+                    .then((role_id) => {
+                        // deleteRole(id);
+                        deleteRole(role_id)
+                        .then((istrue) => {
+                            if (istrue){
+                                displayInitialMenu();
+                            }
+                        });
+                    });
+                });
+                break;
         }
     });
 };
 
-
+// This function called from the View Menu
 async function displayEmployeesByManager() {
     const managersArray = await queryAllManagers();
 
@@ -377,6 +440,7 @@ async function displayEmployeesByManager() {
     .then(({manager}) => {
         returnManagerId(manager)
         .then((manager_id) => {
+             // this query is in employee.js
             queryEmployeeByManager(manager_id)
             .then((istrue)=>{
                 if (istrue) {
@@ -389,6 +453,7 @@ async function displayEmployeesByManager() {
   
 };
 
+// This function called from the View Menu
 async function displayEmployeesByDepartment() {
     const departmentArray = await queryAllDepartments();
 
@@ -402,6 +467,7 @@ async function displayEmployeesByDepartment() {
     .then(({department}) => {
         returnDepartmentId(department)
         .then((department_id) => {
+             // this query is in employee.js
             queryEmployeeByDepartment(department_id)
             .then((istrue)=>{
                 if (istrue) {
@@ -414,6 +480,7 @@ async function displayEmployeesByDepartment() {
 
 };
 
+// This function called from the View Menu
 async function displaySalariesByDepartment() {
     const departmentArray = await queryAllDepartments();
 
@@ -427,6 +494,7 @@ async function displaySalariesByDepartment() {
     .then(({department}) => {
         returnDepartmentId(department)
         .then((department_id) => {
+            // this query is in employee.js
             queryEmployeeSalaryByDepartment(department_id)
             .then((istrue)=>{
                 if (istrue) {
@@ -439,17 +507,5 @@ async function displaySalariesByDepartment() {
 
 };
 
-
-
-
-
-
-
-// deleteAnEmployee(id);
-
-// deleteDepartment(id);
-
-// deleteRole(id);
-
-
+// This starts the application
 startup();
