@@ -21,6 +21,8 @@ This application requires that a MYSQL server be installed and running on the se
 
 Run the command line application by executing "npm index" from the root of the local folder into which you installed the application above.  Next,  you just have to follow the command line prompts.   You will initially be presented with a menu to View, Add, Update, or Delete the Employees, Departments or Roles.    Each selection will give you its own menu of options.   Where you are asked to choose among options that are already stored in the database, you will be presented with a list.  There is no need to remember names, departments, roles, or ids.  You will be presented with all that information from which to make a choice.  If you want to exit the application, you can press Control-C at any time.  
 
+Put a YouTube video link here with a walk-through.
+
 
 ## Credits
 

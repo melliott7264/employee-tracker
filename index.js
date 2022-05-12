@@ -34,7 +34,10 @@ const {
 const inquirer = require('inquirer');
 
 function startup() {
-    console.log("Welcome to the Employee Tracker.");
+    console.log(" ");
+    console.log("Welcome to the Employee Tracker!");
+    console.log(" ");
+
     displayInitialMenu();
 };
 
@@ -45,21 +48,21 @@ function displayInitialMenu() {
             type: "list",
             name: "main_menu",
             message: "Please select desired operation:",
-            choices: ["View Employee/Role/Department", "Add Employee/Role/Department", "Update Employee/Role/Department", "Delete Employee/Role/Department"]
+            choices: ["View --> Employee/Role/Department", "Add --> Employee/Role/Department", "Update --> Employee/Role/Department", "Delete --> Employee/Role/Department"]
         }
     )
     .then(({main_menu}) => {
         switch (main_menu) {
-            case "View Employee/Role/Department":
+            case "View --> Employee/Role/Department":
                 displayViewMenu();
                 break;
-            case "Add Employee/Role/Department":
+            case "Add --> Employee/Role/Department":
                 displayAddMenu();
                 break;
-            case "Update Employee/Role/Department":
+            case "Update --> Employee/Role/Department":
                 displayUpdateMenu();
                 break;
-            case "Delete Employee/Role/Department":
+            case "Delete --> Employee/Role/Department":
                 displayDeleteMenu();
                 break;
         }
