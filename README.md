@@ -2,10 +2,9 @@
 
 ## Description
 
-This is a command line application written in Node.js that will access its data on a SQL database using MySQL that tracks employees by employee, role, and department.  
+This is a command line application written in Node.js that will store its data in a SQL database using MySQL that tracks employees by employee, role, and department.  
 The user can view all employees, departments and roles as well as employees by manager or department and finally, display the total of all salaries for a department. 
 The user can add or delete an employee, role, or department.  They can also update an employee's role or manager.
-
 
 ## Table of Contents
 
@@ -20,7 +19,7 @@ This application requires that a MYSQL server be installed and running on the se
 
 ## Usage
 
-Run the command line application by executing "npm index" from the root of the local folder into which you installed the application above.
+Run the command line application by executing "npm index" from the root of the local folder into which you installed the application above.  Next,  you just have to follow the command line prompts.   You will initially be presented with a menu to View, Add, Update, or Delete the Employees, Departments or Roles.    Each selection will give you its own menu of options.   Where you are asked to choose among options that are already stored in the database, you will be presented with a list.  There is no need to remember names, departments, roles, or ids.  You will be presented with all that information from which to make a choice.  If you want to exit the application, you can press Control-C at any time.  
 
 
 ## Credits
