@@ -1,5 +1,6 @@
 // These are all the SQL queries for the application as async functions
-// These are all the employee table related queries
+
+// These are all the Employee table related queries
 const {
         queryAllEmployeeData,
         addAnEmployee,
@@ -14,7 +15,8 @@ const {
         queryAllEmployees,
         returnEmployeeId
        } = require('./lib/employee');
-// These are all the department table related queries       
+
+// These are all the Department table related queries       
 const {
         queryAllDepartmentData,
         addDepartment,
@@ -22,7 +24,8 @@ const {
         queryAllDepartments,
         returnDepartmentId
        } = require('./lib/department');
-// These are all the role table related queries       
+
+// These are all the Role table related queries       
 const {
         queryAllRoleData,
         addRole,
@@ -30,16 +33,53 @@ const {
         queryAllRoles,
         returnRoleId
      } = require('./lib/role');
-// End SQL queries     
+// End SQL queries  
+
+// These are the async functions called by the View/Add/Update/Delete Menus
+
+// View Functions
+const {
+        displayEmployeesByManager,
+        displayEmployeesByDepartment,
+        displaySalariesByDepartment
+    } = require('./lib/view');
+
+// Add Functions
+const {
+        caseAddDepartment,
+        caseAddEmployee,
+        caseAddRole
+} = require('./lib/add');
+
+// Update Functions
+const {
+        caseUpdateManager,
+        caseUpdateRole
+    } = require('./lib/update');
+
+// Delete Functions    
+const {
+        caseDeleteEmployee,
+        caseDeleteDepartment,
+        caseDeleteRole
+    } = require('./lib/delete');
+// End Menu Functions
+
 const inquirer = require('inquirer');
+
+// ********************* Display Welcome Message *********************
 
 function startup() {
     console.log(" ");
-    console.log("Welcome to the Employee Tracker!");
+    console.log(" ************* Welcome to Employee Tracker! *************");
+    console.log(" ");
+    console.log("         An application to manage employee data.");
     console.log(" ");
 
     displayInitialMenu();
 };
+
+// **************** Display the initial View/Add/Update/Delete menu *****************
 
 function displayInitialMenu() {
     inquirer
@@ -69,6 +109,8 @@ function displayInitialMenu() {
     });
 };
 
+// ******************** Display View menu ********************
+
 function displayViewMenu() { 
     inquirer
     .prompt(
@@ -81,6 +123,7 @@ function displayViewMenu() {
     )
     .then(({view_menu}) => {
         switch (view_menu) {
+            // For the first three cases, I included all the code here because it was faily short.
             case "All Departments":
                 queryAllDepartmentData()
                 .then((istrue) => {
@@ -105,8 +148,17 @@ function displayViewMenu() {
                     }
                 });
                 break;
+
+            // The three cases below call three separate async functions becuase I felt it was too much code to include here.    
             case "Employees by Manager":
-                displayEmployeesByManager();
+                displayEmployeesByManager()
+                .then((istrue) => {
+                    if (istrue) {
+                       console.log("display initial menu");
+                       displayInitialMenu();
+                    }
+                });
+                console.log("break");
                 break;
             case "Employees by Department":
                 displayEmployeesByDepartment();
@@ -118,11 +170,10 @@ function displayViewMenu() {
     });
 };
 
-async function displayAddMenu() {
+// ***************** Display Add Menu *****************
+
+function displayAddMenu() {
     // get the arrays for the menu lists right at the beginning with await operators as these need to be at the top of async functions
-    const departmentArray = await queryAllDepartments();
-    const roleArray = await queryAllRoles();
-    const managersArray = await queryAllManagers();
 
     inquirer
     .prompt(
@@ -134,149 +185,29 @@ async function displayAddMenu() {
         }
     )
     .then(({add_menu}) => {
+        // All cases implemented by called async functions
         switch (add_menu) {
             case "Department":
-                inquirer
-                .prompt (
-                    {
-                        type: "input",
-                        name:   "department",
-                        message: "Please enter the department name:",
-                        validation: nameInput => {
-                            if (nameInput) {
-                                return true;
-                            } else {
-                                console.log('Please enter a name for your Department!');
-                                return false;
-                            }
-                        }
-                    }
-                )
-                .then((inputDataArray) => {
-                    addDepartment(inputDataArray.department)             
-                    .then((istrue) => {
-                        if (istrue) {
-                        displayInitialMenu();
-                        }
-                     });
-                 });
+                caseAddDepartment();
                 break;
             case "Role":
-                inquirer
-                .prompt ([
-                    {
-                        type: "input",
-                        name:   "title",
-                        message: "Please enter the role title:",
-                        validation: titleInput => {
-                            if (titleInput) {
-                                return true;
-                            } else {
-                                console.log('Please enter a title for the role!');
-                                return false;
-                            }
-                        }
-                    },
-                    {
-                        type: "number",
-                        name:   "salary",
-                        message: "Please enter the role salary:",
-                        validation: salaryInput => {
-                            if (Number.isInteger(salaryInput)) {
-                                return true;
-                            } else {
-                                console.log('Please enter an integer for the salary for the role!');
-                                return false;
-                            }
-                        }
-                    },
-                    {
-                        type: "list",
-                        name:   "department_name",
-                        message: "Please choose a department:",
-                        choices: departmentArray
-                    }
-                ])
-                .then((inputDataArray) => {
-                    returnDepartmentId(inputDataArray.department_name)
-                    .then((department_id) => {
-                        addRole(inputDataArray.title, inputDataArray.salary, department_id)
-                            .then((istrue) => {
-                                if (istrue) {
-                                    displayInitialMenu();
-                                }
-                            });
-                    });
-                });
+                caseAddRole();
                 break;
             case "Employee":
-                inquirer
-                .prompt ([
-                    {
-                        type: "input",
-                        name:   "first_name",
-                        message: "Please enter the employees first name:",
-                        validation: first_nameInput => {
-                            if (first_nameInput) {
-                                return true;
-                            } else {
-                                console.log('Please enter a first name for the employee!');
-                                return false;
-                            }
-                        }
-                    },
-                    {
-                        type: "input",
-                        name:   "last_name",
-                        message: "Please enter the employees last name:",
-                        validation: last_nameInput => {
-                            if (last_nameInput) {
-                                return true;
-                            } else {
-                                console.log('Please enter a last name for the employee!');
-                                return false;
-                            }
-                        }
-                    },
-                    {
-                        type: "list",
-                        name:   "role",
-                        message: "Please select the role for this employee:",
-                        choices:  roleArray
-                    },
-                    {
-                        type: "list",
-                        name:   "manager",
-                        message: "Please select the manager for this employee:",
-                        choices: managersArray
-                    }
-                ])
-                .then((inputDataArray) => {
-                    returnRoleId(inputDataArray.role)
-                        .then((role_id) => {
-                            returnManagerId(inputDataArray.manager)
-                                .then((manager_id) => {
-                                    addAnEmployee(inputDataArray.first_name, inputDataArray.last_name, role_id, manager_id)
-                                        .then((istrue)=> {
-                                            if(istrue) {
-                                            displayInitialMenu();   
-                                            }
-                                        });
-                                });
-                        });                  
-                });
+                caseAddEmployee();
                 break;  
         }
     });
 
 };
 
+// **************** Display Update Menu *****************
+
 async function displayUpdateMenu() {
     // get the arrays for the menu lists right at the beginning with await operators as these need to be at the top of async functions
-    const roleArray = await queryAllRoles();
     const employeeArray = await queryAllEmployees();
-    const managersArray = await queryAllManagers();
 
+    // Start update function by displaying a list of employees to select from - use employeeArray for choices
     inquirer
     .prompt(
         {
@@ -297,46 +228,13 @@ async function displayUpdateMenu() {
                         choices: ["Role", "Manager"]
                 })
                 .then(({update_type}) => {
+                        // Implement cases by calling async functions
                         switch (update_type) {
                             case "Role":
-                                inquirer
-                                .prompt ({
-                                        type: "list",
-                                        name: "role",
-                                        message: `Please select the new role for ${employee_name}:`,
-                                        choices: roleArray
-                                        })
-                                .then(({role}) => {
-                                    returnRoleId(role)
-                                    .then((role_id) => {
-                                        updateEmployeeRole(employee_id, role_id)           
-                                        .then((istrue) => {
-                                            if (istrue) {
-                                            displayInitialMenu();
-                                            }
-                                        });
-                                    });
-                                });
+                                caseUpdateRole();
                                 break;
                             case "Manager":
-                                inquirer
-                                .prompt ({
-                                        type: "list",
-                                        name: "manager",
-                                        message: `Please select the new manager for ${employee_name}:`,
-                                        choices: managersArray
-                                        })
-                                .then(({manager}) => {
-                                    returnManagerId(manager)
-                                    .then((manager_id) => {
-                                        updateEmployeeManager(employee_id, manager_id)
-                                        .then((istrue) => {
-                                            if (istrue) {
-                                                displayInitialMenu();
-                                            }
-                                        });
-                                    });
-                                });
+                                caseUpdateManager();
                                 break;
                         }
                 });
@@ -344,14 +242,9 @@ async function displayUpdateMenu() {
     });
 };
 
-// Delete Menu
-async function displayDeleteMenu() {
-    // get the arrays for the menu lists right at the beginning with await operators as these need to be at the top of async functions
-    const roleArray = await queryAllRoles();
-    const employeeArray = await queryAllEmployees();
-    const departmentArray = await queryAllDepartments();
+// ************* Display Delete Menu **************
 
-    // Display menu of Employee/Department/Role for deletion
+function displayDeleteMenu() {
     inquirer
     .prompt({
             type: "list",
@@ -362,153 +255,20 @@ async function displayDeleteMenu() {
     .then(({deletion_type}) => {
         switch (deletion_type) {
             case "Employee":
-                inquirer
-                .prompt({
-                        type: "list",
-                        name: "employee_name",
-                        message: "Select the Employee to delete:",
-                        choices: employeeArray
-                })
-                .then(({employee_name}) => {
-                    returnEmployeeId(employee_name)
-                    .then((employee_id) => {
-                        // deleteAnEmployee(id)
-                        deleteAnEmployee(employee_id)
-                        .then((istrue) => {
-                            if (istrue){
-                                displayInitialMenu();
-                            }
-                        });
-                    });
-                });
+                caseDeleteEmployee();
                 break;
             case "Department":
-                inquirer
-                .prompt({
-                        type: "list",
-                        name: "department_name",
-                        message: "Select the Department to delete:",
-                        choices: departmentArray
-                })
-                .then(({department_name}) => {
-                    returnDepartmentId(department_name)
-                    .then((department_id) => {
-                        // deleteDepartment(id);
-                        deleteDepartment(department_id)
-                        .then((istrue) => {
-                            if (istrue){
-                                displayInitialMenu();
-                            }
-                        });
-                    });
-                });
-
+                caseDeleteDepartment();
                 break;
             case "Role":
-                inquirer
-                .prompt({
-                        type: "list",
-                        name: "role_name",
-                        message: "Select the Role to delete:",
-                        choices: roleArray
-                })
-                .then(({role_name}) => {
-                    returnRoleId(role_name)
-                    .then((role_id) => {
-                        // deleteRole(id);
-                        deleteRole(role_id)
-                        .then((istrue) => {
-                            if (istrue){
-                                displayInitialMenu();
-                            }
-                        });
-                    });
-                });
+                caseDeleteRole();
                 break;
         }
     });
 };
 
-// This function called from the View Menu
-async function displayEmployeesByManager() {
-    const managersArray = await queryAllManagers();
-
-    inquirer
-    .prompt({
-        type: "list",
-        name: "manager",
-        message: "Please select the Manager",
-        choices: managersArray
-    })
-    .then(({manager}) => {
-        returnManagerId(manager)
-        .then((manager_id) => {
-             // this query is in employee.js
-            queryEmployeeByManager(manager_id)
-            .then((istrue)=>{
-                if (istrue) {
-                   displayInitialMenu(); 
-                }
-                
-            });
-        });
-    });
-  
-};
-
-// This function called from the View Menu
-async function displayEmployeesByDepartment() {
-    const departmentArray = await queryAllDepartments();
-
-    inquirer
-    .prompt({
-        type: "list",
-        name: "department",
-        message: "Please select the Department",
-        choices: departmentArray
-    })
-    .then(({department}) => {
-        returnDepartmentId(department)
-        .then((department_id) => {
-             // this query is in employee.js
-            queryEmployeeByDepartment(department_id)
-            .then((istrue)=>{
-                if (istrue) {
-                   displayInitialMenu(); 
-                }
-                
-            });
-        });
-    });
-
-};
-
-// This function called from the View Menu
-async function displaySalariesByDepartment() {
-    const departmentArray = await queryAllDepartments();
-
-    inquirer
-    .prompt({
-        type: "list",
-        name: "department",
-        message: "Please select the Department",
-        choices: departmentArray
-    })
-    .then(({department}) => {
-        returnDepartmentId(department)
-        .then((department_id) => {
-            // this query is in employee.js
-            queryEmployeeSalaryByDepartment(department_id)
-            .then((istrue)=>{
-                if (istrue) {
-                   displayInitialMenu(); 
-                }
-                
-            });
-        });
-    });
-
-};
-
-// This starts the application
+// ********************* This starts the application ********************
 startup();
+
+
+// module.exports = {displayInitialMenu};
