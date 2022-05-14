@@ -3,15 +3,15 @@
 // These are all the Employee table related queries
 const {
         queryAllEmployeeData,
-        addAnEmployee,
-        deleteAnEmployee,
-        updateEmployeeRole,
-        updateEmployeeManager,
-        queryEmployeeByManager,
-        queryEmployeeByDepartment,
-        queryEmployeeSalaryByDepartment,
+        // addAnEmployee,
+        // deleteAnEmployee,
+        // updateEmployeeRole,
+        // updateEmployeeManager,
+        // queryEmployeeByManager,
+        // queryEmployeeByDepartment,
+        // queryEmployeeSalaryByDepartment,
         queryAllManagers,
-        returnManagerId,
+        // returnManagerId,
         queryAllEmployees,
         returnEmployeeId
        } = require('./lib/employee');
@@ -19,19 +19,19 @@ const {
 // These are all the Department table related queries       
 const {
         queryAllDepartmentData,
-        addDepartment,
-        deleteDepartment,
-        queryAllDepartments,
-        returnDepartmentId
+        // addDepartment,
+        // deleteDepartment,
+        queryAllDepartments
+        // returnDepartmentId
        } = require('./lib/department');
 
 // These are all the Role table related queries       
 const {
         queryAllRoleData,
-        addRole,
-        deleteRole,
-        queryAllRoles,
-        returnRoleId
+        // addRole,
+        // deleteRole,
+        queryAllRoles
+        // returnRoleId
      } = require('./lib/role');
 // End SQL queries  
 
@@ -65,6 +65,8 @@ const {
     } = require('./lib/delete');
 // End Menu Functions
 
+
+
 const inquirer = require('inquirer');
 
 // ********************* Display Welcome Message *********************
@@ -82,6 +84,7 @@ function startup() {
 // **************** Display the initial View/Add/Update/Delete menu *****************
 
 function displayInitialMenu() {
+
     inquirer
     .prompt(
         {
@@ -142,9 +145,9 @@ function displayViewMenu() {
                 break;
             case "All Employees":
                 queryAllEmployeeData()
-                .then((istrue)=> {
+                .then((istrue) => {
                     if(istrue) {
-                     displayInitialMenu();   
+                        displayInitialMenu();   
                     }
                 });
                 break;
@@ -154,17 +157,26 @@ function displayViewMenu() {
                 displayEmployeesByManager()
                 .then((istrue) => {
                     if (istrue) {
-                       console.log("display initial menu");
                        displayInitialMenu();
-                    }
+                    } 
                 });
                 console.log("break");
                 break;
             case "Employees by Department":
-                displayEmployeesByDepartment();
+                displayEmployeesByDepartment()
+                .then((istrue) => {
+                    if (istrue) {
+                       displayInitialMenu();
+                    } 
+                });
                 break;
             case  "Total Salaries by Department":
-                displaySalariesByDepartment();
+                displaySalariesByDepartment()
+                .then((istrue) => {
+                    if (istrue){
+                        displayInitialMenu();
+                    } 
+                });
                 break;   
         }
     });
@@ -188,13 +200,28 @@ function displayAddMenu() {
         // All cases implemented by called async functions
         switch (add_menu) {
             case "Department":
-                caseAddDepartment();
+                caseAddDepartment()
+                .then((istrue) => {
+                    if(istrue) {
+                        displayInitialMenu();   
+                    }
+                });
                 break;
             case "Role":
-                caseAddRole();
+                caseAddRole()
+                .then((istrue) => {
+                    if(istrue) {
+                        displayInitialMenu();   
+                    }
+                });
                 break;
             case "Employee":
-                caseAddEmployee();
+                caseAddEmployee()
+                .then((istrue) => {
+                    if(istrue) {
+                        displayInitialMenu();   
+                    }
+                });
                 break;  
         }
     });
@@ -231,10 +258,20 @@ async function displayUpdateMenu() {
                         // Implement cases by calling async functions
                         switch (update_type) {
                             case "Role":
-                                caseUpdateRole();
+                                caseUpdateRole(employee_name, employee_id)
+                                .then((istrue) => {
+                                    if(istrue) {
+                                        displayInitialMenu();   
+                                    }
+                                });
                                 break;
                             case "Manager":
-                                caseUpdateManager();
+                                caseUpdateManager(employee_name, employee_id)
+                                .then((istrue) => {
+                                    if(istrue) {
+                                        displayInitialMenu();   
+                                    }
+                                });
                                 break;
                         }
                 });
@@ -255,13 +292,28 @@ function displayDeleteMenu() {
     .then(({deletion_type}) => {
         switch (deletion_type) {
             case "Employee":
-                caseDeleteEmployee();
+                caseDeleteEmployee()
+                .then((istrue) => {
+                    if(istrue) {
+                        displayInitialMenu();   
+                    }
+                });
                 break;
             case "Department":
-                caseDeleteDepartment();
+                caseDeleteDepartment()
+                .then((istrue) => {
+                    if(istrue) {
+                        displayInitialMenu();   
+                    }
+                });
                 break;
             case "Role":
-                caseDeleteRole();
+                caseDeleteRole()
+                .then((istrue) => {
+                    if(istrue) {
+                        displayInitialMenu();   
+                    }
+                });
                 break;
         }
     });
@@ -271,4 +323,3 @@ function displayDeleteMenu() {
 startup();
 
 
-// module.exports = {displayInitialMenu};
