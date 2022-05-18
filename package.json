@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/melliott7264/employee-tracker#readme",
   "devDependencies": {
+    "eslint": "^8.15.0",
     "inquirer": "^8.2.4"
   },
   "dependencies": {

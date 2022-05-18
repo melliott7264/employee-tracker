@@ -15,11 +15,15 @@ The user can add or delete an employee, role, or department.  They can also upda
 
 ## Installation
 
-This application requires that a MYSQL server be installed and running on the server.   Once running, there are three files in the db folder that need to be executed from within MySQL to build the database.  However, before doing that, this application will have to be cloned to a local folder on the server from GitHub:  https://github.com/melliott7264/employee-tracker.   Once cloned, from the root of the installation folder where the package.json file resides, run "npm install".  This assumes that npm has already been installed on your server along with MySQL.   The "npm install" will install all the dependencies including Inquirer, MySQL2 and console table.  At this point you can log onto the MySQL shell and run the following instructions to build the database:  "./db/db.sql;", ".db/schema.sql", ".db/seeds.sql".  
+This application requires that a MYSQL server be installed and running on the server.   Once running, there are three files in the db folder that need to be executed from within MySQL to build the database.  However, before doing that, this application will have to be cloned to a local folder on the server from GitHub:  https://github.com/melliott7264/employee-tracker.   Once cloned, from the root of the installation folder where the package.json file resides, run "npm install".  This assumes that npm has already been installed on your server along with MySQL.   The "npm install" will install all the dependencies including Inquirer, MySQL2 and console table.  At this point you can log onto the MySQL shell and run the following instructions to build the database:  "souce ./db/db.sql;", "source .db/schema.sql" and  "source .db/seeds.sql".  
 
 ## Usage
 
-Run the command line application by executing "npm index" from the root of the local folder into which you installed the application above.  Next,  you just have to follow the command line prompts.   You will initially be presented with a menu to View, Add, Update, or Delete the Employees, Departments or Roles.    Each selection will give you its own menu of options.   Where you are asked to choose among options that are already stored in the database, you will be presented with a list.  There is no need to remember names, departments, roles, or ids.  You will be presented with all that information from which to make a choice.  If you want to exit the application, you can press Control-C at any time.  
+Run the command line application by executing "npm index" from the root of the local folder into which you installed the application above.  Next,  you just have to follow the command line prompts.   You will initially be presented with a menu to View, Add, Update, or Delete the Employees, Departments or Roles.    Each selection will give you its own menu of options.   Where you are asked to choose among options that are already stored in the database, you will be presented with a list.  There is no need to remember names, departments, roles, or ids.  You will be presented with all that information from which to make a choice.  
+
+If you try to delete an item with an association to another table, you will get a warning and not be allowed to do that.  You will have to remove the associations first. 
+
+If you want to exit the application, you can press Control-C at any time.  
 
 Put a YouTube video link here with a walk-through.
 

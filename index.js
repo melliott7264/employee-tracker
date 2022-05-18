@@ -1,37 +1,21 @@
+/* eslint-disable no-undef */
 // These are all the SQL queries for the application as async functions
 
 // These are all the Employee table related queries
 const {
         queryAllEmployeeData,
-        // addAnEmployee,
-        // deleteAnEmployee,
-        // updateEmployeeRole,
-        // updateEmployeeManager,
-        // queryEmployeeByManager,
-        // queryEmployeeByDepartment,
-        // queryEmployeeSalaryByDepartment,
-        queryAllManagers,
-        // returnManagerId,
         queryAllEmployees,
         returnEmployeeId
        } = require('./lib/employee');
 
 // These are all the Department table related queries       
 const {
-        queryAllDepartmentData,
-        // addDepartment,
-        // deleteDepartment,
-        queryAllDepartments
-        // returnDepartmentId
+        queryAllDepartmentData
        } = require('./lib/department');
 
 // These are all the Role table related queries       
 const {
-        queryAllRoleData,
-        // addRole,
-        // deleteRole,
-        queryAllRoles
-        // returnRoleId
+        queryAllRoleData
      } = require('./lib/role');
 // End SQL queries  
 
@@ -79,7 +63,7 @@ function startup() {
     console.log(" ");
 
     displayInitialMenu();
-};
+}
 
 // **************** Display the initial View/Add/Update/Delete menu *****************
 
@@ -110,7 +94,7 @@ function displayInitialMenu() {
                 break;
         }
     });
-};
+}
 
 // ******************** Display View menu ********************
 
@@ -125,8 +109,8 @@ function displayViewMenu() {
         }
     )
     .then(({view_menu}) => {
-        switch (view_menu) {
-            // For the first three cases, I included all the code here because it was faily short.
+         switch (view_menu) {
+            // For the first three cases, included all the code here because it was fairly short.
             case "All Departments":
                 queryAllDepartmentData()
                 .then((istrue) => {
@@ -152,7 +136,7 @@ function displayViewMenu() {
                 });
                 break;
 
-            // The three cases below call three separate async functions becuase I felt it was too much code to include here.    
+            // The three cases below call three separate async functions becuase it was too much code to include here.    
             case "Employees by Manager":
                 displayEmployeesByManager()
                 .then((istrue) => {
@@ -160,7 +144,6 @@ function displayViewMenu() {
                        displayInitialMenu();
                     } 
                 });
-                console.log("break");
                 break;
             case "Employees by Department":
                 displayEmployeesByDepartment()
@@ -180,7 +163,7 @@ function displayViewMenu() {
                 break;   
         }
     });
-};
+}
 
 // ***************** Display Add Menu *****************
 
@@ -226,7 +209,7 @@ function displayAddMenu() {
         }
     });
 
-};
+}
 
 // **************** Display Update Menu *****************
 
@@ -277,7 +260,7 @@ async function displayUpdateMenu() {
                 });
             });
     });
-};
+}
 
 // ************* Display Delete Menu **************
 
@@ -317,7 +300,7 @@ function displayDeleteMenu() {
                 break;
         }
     });
-};
+}
 
 // ********************* This starts the application ********************
 startup();
