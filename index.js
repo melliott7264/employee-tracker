@@ -1,4 +1,5 @@
-/* eslint-disable no-undef */
+// ******** This function displays all the menus at the command prompt ***********
+
 // These are all the SQL queries for the application as async functions
 
 // These are all the Employee table related queries
@@ -78,6 +79,7 @@ function displayInitialMenu() {
             choices: ["View --> Employee/Role/Department", "Add --> Employee/Role/Department", "Update --> Employee/Role/Department", "Delete --> Employee/Role/Department"]
         }
     )
+    // Call display sub-menus
     .then(({main_menu}) => {
         switch (main_menu) {
             case "View --> Employee/Role/Department":
@@ -111,10 +113,13 @@ function displayViewMenu() {
     .then(({view_menu}) => {
          switch (view_menu) {
             // For the first three cases, included all the code here because it was fairly short.
+            // All called functions are async and must return a value, usually true or false
             case "All Departments":
                 queryAllDepartmentData()
+                // True returned on successful completion of called function
                 .then((istrue) => {
                     if (istrue) {
+                        // run displayInitialMenu on return of true, or a successful completion of the called function
                         displayInitialMenu();
                     }
                 });
@@ -168,8 +173,7 @@ function displayViewMenu() {
 // ***************** Display Add Menu *****************
 
 function displayAddMenu() {
-    // get the arrays for the menu lists right at the beginning with await operators as these need to be at the top of async functions
-
+    
     inquirer
     .prompt(
         {
