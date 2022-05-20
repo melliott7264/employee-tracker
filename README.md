@@ -25,7 +25,7 @@ If you try to delete an item with an association to another table, you will get 
 
 If you want to exit the application, you can press Control-C at any time.  
 
-Put a YouTube video link here with a walk-through.
+Employee Tracker Walk-through Part 1 -  https://youtu.be/1gu3o0m_OI4    Employee Tracker Walk-through Part 2   https://youtu.be/Sr_Mw1Km_O8  
 
 
 ## Credits
